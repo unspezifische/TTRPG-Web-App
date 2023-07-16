@@ -1,0 +1,24 @@
+.my-button {
+  background-color: #007bff; /* Bootstrap primary button color */
+  color: white; /* Text color */
+  border: none;
+  padding: 10px 24px; /* Adjust as needed */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px; /* Adjust as needed */
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px; /* Adjust as needed */
+  transition-duration: 0.4s; /* Transition effect */
+}
+
+.my-button:hover {
+  background-color: white; /* Background color when hovered */
+  color: #007bff; /* Text color when hovered */
+}
+
+.my-button.selected {
+  background-color: #0069d9; /* Darker blue color when selected */
+  color: white; /* Text color when selected */
+}

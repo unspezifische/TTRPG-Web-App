@@ -1,0 +1,69 @@
+return (
+  <>
+    <div className={`chat-modal ${modalOpen ? 'open' : ''}`}>
+      <Container>
+        <Col>
+          <Row>
+            <h1>Chat</h1>
+          </Row>
+          {/* Display active users */}
+          <Row>
+            {users.length === 0 ? (
+              <p>Nobody else here!</p>
+            ) : (
+              <ToggleButtonGroup
+                type="checkbox"
+                value={selectedUsers}
+                onChange={handleChange}
+                vertical
+              >
+                {users.map((user, i) => (
+                  <ToggleButton id={user} value={user} key={i}>
+                    {user}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            )}
+          </Row>
+          {/* Message Text Field */}
+          <Row>
+            <Form onSubmit={sendMessage}>
+              <Form.Group>
+                <Form.Control
+                  as="textarea"
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  onKeyPress={(event) => (event.key === 'Enter' ? sendMessage(event) : null)}
+                />
+              </Form.Group>
+              <div className="d-flex send-interface">
+                <p className="error-message">{error}</p>
+                <Button variant="primary" type="submit">
+                  <SendIcon fontSize="large" />
+                </Button>
+              </div>
+            </Form>
+          </Row>
+          {/* Displays previous messages */}
+          <Row className="messageContainer">
+            {messages.slice().reverse().map((message, i) => (
+              <div
+                key={i}
+                className={`${message.sender === characterName ? "message sent" : "message received"} ${message.sender === characterName ? "grouped" : ""}`}
+                onClick={() => replyAll(message)}
+              >
+                <div className="message-text">
+                    {message.type === 'item_transfer' ? `${message.sender} gave you ${message.item.quantity} ${message.item.name}` : message.text}
+                  <p className="sender">{message.sender}</p>
+                </div>
+              </div>
+            ))}
+          </Row>
+        </Col>
+      </Container>
+    </div>
+    <Button className="fab" onClick={handleFabClick}>
+      <ChatIcon fontSize="large" />
+    </Button>
+  </>
+);

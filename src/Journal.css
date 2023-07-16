@@ -1,0 +1,14 @@
+/* Journal.css */
+
+.editorContainer {
+  padding: 10px;
+  minHeight: 200px;
+  maxHeight: 50vh;
+  overflow-y: auto;
+}
+
+.entriesTable {
+  minHeight: 200px;
+  maxHeight: 25vh;
+  overflow-y: auto;
+}

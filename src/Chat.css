@@ -1,0 +1,116 @@
+/* Chat.css */
+
+/* default style for large screens */
+.chat-widget {
+  display: block;
+}
+
+.chat-modal {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease-out; /* animate it moving up and down */
+}
+
+.Container {
+  display: flex;
+  flex-direction: column;
+}
+
+.fab {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* styles for small screens */
+@media (max-width: 600px) {
+  .chat-widget {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 1007;
+  }
+
+  .chat-modal {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    overflow: auto;
+  }
+
+  .fab {
+    display: block;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10; /* so it's above other elements */
+  }
+}
+
+.chat-modal.open {
+  transform: translateY(0); /* move it up to fully visible */
+}
+
+.send-interface {
+  justify-content: space-between;
+}
+
+.messageContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0.5em auto;
+  max-width: 600px;
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  cursor: pointer;
+
+  align-items: flex-start;
+}
+
+.message {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.message.sent {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  background-color: #add8e6; /* Light blue */
+}
+
+.message.received {
+  flex-direction: row;
+  justify-content: flex-start;
+  background-color: #dcf8c6; /* Light green */
+}
+
+.sender {
+  margin: 0 10px;
+  font-size: small;
+  color: gray;
+}
+
+.new-group {
+  padding-top: 20px;
+}
+
+.message-content {
+  flex: 1;
+  text-align: left;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

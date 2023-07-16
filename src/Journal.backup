@@ -1,0 +1,88 @@
+import React, { useState, useEffect } from 'react';
+import { Editor, EditorState, RichUtils, convertToRaw, convertFromRaw } from 'draft-js';
+import { Container, Button, ButtonGroup, Row } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
+
+function Journal({ headers, characterName}) {
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+
+  useEffect(() => {
+    const loadEntries = async () => {
+      try {
+        const response = await axios.get('/api/journal', { headers: headers });
+        const entries = response.data.entries;
+        if (entries.length > 0) {
+          const contentState = convertFromRaw(JSON.parse(entries[0]));
+          setEditorState(EditorState.createWithContent(contentState));
+        }
+      } catch (error) {
+        console.error('Error loading journal entries:', error);
+      }
+    };
+    loadEntries();
+  }, [headers]);
+
+  const handleKeyCommand = (command, editorState) => {
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+    if (newState) {
+      setEditorState(newState);
+      return 'handled';
+    }
+    return 'not-handled';
+  };
+
+  const toggleInlineStyle = (inlineStyle) => {
+    setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
+  };
+
+  const toggleBlockType = (blockType) => {
+    setEditorState(RichUtils.toggleBlockType(editorState, blockType));
+  };
+
+  const saveEntry = async () => {
+    const contentState = editorState.getCurrentContent();
+    const rawContentState = convertToRaw(contentState);
+    const entry = JSON.stringify(rawContentState);
+
+    const headers = {
+      'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+    };
+
+    try {
+      const response = await axios.post('/api/journal', { entry }, { headers });
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error saving journal entry:', error);
+    }
+  };
+
+  return (
+    <Container>
+      <h1>{characterName}'s Journal</h1>
+      <Row>
+        <ButtonGroup>
+          <Button onClick={() => toggleInlineStyle('BOLD')}>Bold</Button>
+          <Button onClick={() => toggleInlineStyle('ITALIC')}>Italic</Button>
+          <Button onClick={() => toggleInlineStyle('UNDERLINE')}>Underline</Button>
+          <Button onClick={() => toggleBlockType('unordered-list-item')}>Bulleted List</Button>
+          {/* Add more buttons for other formatting options */}
+        </ButtonGroup>
+      </Row>
+      <Row>
+        <div style={{ border: '1px solid black', padding: '10px', minHeight: '200px' }}>
+          <Editor
+            editorState={editorState}
+            handleKeyCommand={handleKeyCommand}
+            onChange={setEditorState}
+          />
+        </div>
+      </Row>
+      <Row>
+        <Button onClick={saveEntry}>Save Entry</Button>
+      </Row>
+    </Container>
+  );
+}
+
+export default Journal;

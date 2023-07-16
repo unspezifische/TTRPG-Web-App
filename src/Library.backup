@@ -1,0 +1,87 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Button, Card, Col, Container, Form, Modal, Row, Image } from 'react-bootstrap';
+
+function Library({ headers }) {
+  const [files, setFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showFileModal, setShowFileModal] = useState(false);
+  const [currentFile, setCurrentFile] = useState(null);
+
+  useEffect(() => {
+    // Fetch the list of files from the server
+    axios.get('http://127.0.0.1:5000/api/library', { headers })
+      .then(response => {
+        console.log("response.data:", response.data);
+        setFiles(response.data.files);
+      });
+  }, [headers]);
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleFileUpload = () => {
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    axios.post('http://127.0.0.1:5000/api/library', formData, { headers })
+      .then(response => {
+        // Add the new file to the list of files
+        setFiles(prevFiles => [...prevFiles, response.data.file]);
+        setShowUploadModal(false);
+      });
+  };
+
+  const handleFileClick = (file) => {
+    setCurrentFile(file);
+    setShowFileModal(true);
+  };
+
+  return (
+    <Container>
+      <h1>Library</h1>
+      <Button onClick={() => setShowUploadModal(true)}>Upload File</Button>
+      <Row>
+        {files.map((file, index) => (
+          <Col sm={6} md={4} lg={3} key={index}>
+            <Card>
+              <Card.Img variant="top" src={`http://127.0.0.1:5000/api/library/${file.name}.${file.type}`} />
+              <Card.Body>
+                <Card.Title>{file.name}</Card.Title>
+                <Button variant="primary" href={`http://127.0.0.1:5000/api/library/${file.name}.${file.type}`}>View</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      {/* File Upload Modal */}
+      <Modal show={showUploadModal} onHide={() => setShowUploadModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload a File</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.File id="file-upload" label="Choose a file" onChange={handleFileChange} />
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowUploadModal(false)}>Close</Button>
+          <Button variant="primary" onClick={handleFileUpload}>Upload</Button>
+        </Modal.Footer>
+      </Modal>
+      {/* File Viewing Modal */}
+      <Modal show={showFileModal} onHide={() => setShowFileModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{currentFile?.name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Image src={`http://127.0.0.1:5000/api/library/${currentFile?.name}.${currentFile?.type}`} fluid />
+        </Modal.Body>
+      </Modal>
+    </Container>
+  );
+}
+
+export default Library;

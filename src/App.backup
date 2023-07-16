@@ -1,0 +1,173 @@
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import axios from 'axios';
+import io from 'socket.io-client';
+import jwtDecode from 'jwt-decode';
+import { Container, Row, Col } from 'react-bootstrap';
+
+import UserContext from './UserContext'; // import the context
+import Login from './Login';
+import Register from './Register';
+import InventoryView from './InventoryView';
+import Journal from './Journal';
+import Library from './Library'
+import Chat from './Chat';
+import Menu from './Menu';
+
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    if (decodedToken.exp < Date.now() / 1000) {
+      // Token is expired, redirect to login page
+      window.history.pushState({}, null, "/login");
+    } else {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+function App() {
+  const [username, setUsername] = useState(null);
+
+  // Socket Stuff
+  const [socket, setSocket] = useState(null);
+  const [socketLoading, setSocketLoading] = useState(true);
+  const [token, setToken] = useState(null);
+
+  // State variables from useAuthHandler
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [characterName, setCharacterName] = useState('');
+  const [accountType, setAccountType] = useState('');
+  const [headers, setHeaders] = useState({});
+
+  // Authentication logic from useAuthHandler
+  const authenticate = (token) => {
+    // You can check if a token has been passed to the function
+    // If not, you fetch it from localStorage
+    token = token || localStorage.getItem('access_token');
+    console.log("APP- token (from App):", token);
+    if (token) {
+      setHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+      axios.get('api/profile', { headers: { Authorization: `Bearer ${token}` } })
+      .then(response => {
+        setIsLoggedIn(true);
+        setCharacterName(response.data.character_name);
+        setAccountType(response.data.account_type);
+      })
+      .catch(error => {
+        setIsLoggedIn(false);
+        if (error.response && error.response.status === 503) {
+          // If the status code is 503, clear local storage and set isLoggedIn to false
+          localStorage.clear();
+        }
+      })
+      .finally(() => {
+        setIsLoading(false); // set loading to false after the data is fetched or there's an error
+      });
+    } else {
+      setIsLoggedIn(false);
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    authenticate();
+  }, []);
+
+  // Creates the web socket
+  useEffect(() => {
+    setSocketLoading(true);
+    const newSocket = io();
+    setSocket(newSocket);
+    setSocketLoading(false);
+
+    newSocket.on('active_users', (active_users) => {
+      console.log('APP- Active users:', active_users);
+    });
+
+    return () => newSocket.close();
+  }, []);
+
+
+  /*         Debugging       */
+  useEffect(() => {
+    console.log('isLoading changed:', isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {
+    console.log("APP- accountType:", accountType);
+    console.log("APP- characterName:", characterName);
+  }, [accountType, characterName])
+
+  useEffect(() => {
+    console.log("APP- socket:", socket);
+  }, [socket]);
+
+  useEffect(() => {
+    console.log("APP- token (from App):", token);
+  }, [token]);
+
+  useEffect(() => {
+    console.log("APP- username (from App):", username);
+  }, [username]);
+
+  useEffect(() => {
+    if (socket && username) {
+      console.log("APP- username inside user_connected emit:", username);
+      socket.emit('user_connected', { username: username });
+    }
+  }, [socket, username]);
+  /***************************/
+
+  return (
+    <UserContext.Provider value={{ characterName, accountType, headers, setIsLoggedIn, socket }}>
+      <Router>
+      {isLoggedIn ? (
+        <Container fluid>
+          <Row style={{display: 'flex', flexDirection: 'row', height: '100vh'}}>
+            <<Col className="d-none d-md-block" style={{flex: '0 0 auto', width: '5%', height: '100%'}}>
+              <Menu />
+            </Col>
+            <Col style={{flex: '1 0 auto', width: '70%', height: '100%'}}>
+              <Routes>
+                <Route path="/inventoryView" element={<InventoryView username={username} characterName={characterName} accountType={accountType} headers={headers} socket={socket} isLoading={isLoading} setIsLoading={setIsLoading}  />} />
+                <Route path="/journal" element={<Journal characterName={characterName} headers={headers} isLoading={isLoading} />} />
+                <Route path="/library" element={<Library headers={headers} />} />
+                <Route path="*" element={<Navigate to="/inventoryView" />} /> {/* Default route */}
+              </Routes>
+              </Col>
+              <Col className="d-none d-md-block" style={{flex: '0 0 auto', width: '25%', height: '100%'}}>
+                {!socketLoading && <Chat headers={headers} socket={socket} currentUser={characterName} />}
+              </Col>
+          </Row>
+        </Container>
+      ) : (
+        <Container fluid>
+          <Routes>
+            <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setToken={setToken} setUsername={(username) => {
+              console.log("APP- setUsername called with:", username);
+              setUsername(username);
+              }} authenticate={authenticate} />}
+            />
+            <Route path="/register" element={<Register setIsLoggedIn={setIsLoggedIn} setToken={setToken} setUsername={setUsername} authenticate={authenticate} />} />
+            <Route path="*" element={<Navigate to="/login" />} /> {/* Default route */}
+          </Routes>
+        </Container>
+        )
+      }
+      </Router>
+    </UserContext.Provider>
+  );
+}
+
+export default App;

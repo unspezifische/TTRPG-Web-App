@@ -1,0 +1,32 @@
+.App {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 64px auto 20%;
+  grid-template-rows: 100vh;
+  grid-template-areas: "menu content chat";
+}
+
+.menu-column {
+  width: 64px;
+  grid-area: menu;
+  background: #db3d44;
+}
+
+.content-column {
+  grid-area: content;
+  overflow-y: auto;
+}
+
+.chat-column {
+  grid-area: chat;
+  overflow-y: auto;
+}
+
+/* For Mobile */
+/*@media (max-width: 767px) {
+  .App {
+    grid-template-columns: 64px auto 20%;
+    grid-template-rows: 100vh;
+    grid-template-areas: "menu content chat";
+  }
+}*/

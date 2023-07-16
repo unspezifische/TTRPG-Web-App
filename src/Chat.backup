@@ -1,0 +1,142 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Container, Row, Form, Button, ListGroup, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+
+import SendIcon from '@mui/icons-material/Send';
+import './Chat.css';
+
+function Chat({ headers, isMobile, socket, isLoggedIn, currentUser }) {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState({});
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [unreadMessages, setUnreadMessages] = useState({});
+  const [currentUserAvatarUrl, setCurrentUserAvatarUrl] = useState('https://url.to.your.avatar');
+
+  useEffect(() => {
+    console.log("CHAT- users:", users)
+    console.log("CHAT- messages:", messages)
+    console.log("CHAT- selectedUsers:", selectedUsers)
+  }, [users, messages, selectedUsers])
+
+  useEffect(() => {
+    socket.on('message', (message) => {
+      setMessages((messages) => [...messages, message]);
+    });
+
+    socket.on('active_users', (active_usernames) => {
+      // Update the list of active users
+      console.log('CHAT- Active users:', active_usernames);
+      console.log('Updating users state in chat component');
+      setUsers(active_usernames);
+    });
+
+  }, [socket]);
+
+  useEffect(() => {
+    socket.on('message', (message) => {
+        setMessages(prevState => ({
+            ...prevState,
+            [message.sender]: [...(prevState[message.sender] || []), message]
+        }));
+
+        // Increment the unread message count if the message is not from the current user
+        if (message.sender !== currentUser) {
+            setUnreadMessages(prevState => ({
+                ...prevState,
+                [message.sender]: (prevState[message.sender] || 0) + 1
+            }));
+        }
+    });
+
+    socket.on('active_users', (active_usernames) => {
+      // Filter out the current user
+      const otherUsers = active_usernames.filter(user => user !== currentUser);
+
+      // Update the list of active users
+      console.log('Active users:', otherUsers);
+      setUsers(otherUsers);
+    });
+
+  }, [socket, currentUser]);
+
+
+  const sendMessage = (event) => {
+    event.preventDefault();
+
+    if (message) {
+      socket.emit('sendMessage', message, selectedUsers, () => setMessage(''));
+    }
+  };
+
+  const handleChange = (selected) => {
+    setSelectedUsers(selected);
+  };
+
+  return (
+    <Container>
+      <Row>
+        <h1>Chat</h1>
+      </Row>
+      {/* Displays previous messages */}
+      <Row>
+        <ListGroup>
+          {messages.map((message, i) => (
+            <ListGroup.Item key={i}>
+              <strong>{message.sender}</strong>: {message.text}
+              <br />
+              <small>Seen by: {message.seenBy.join(', ')}</small>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </Row>
+      {/* Display active users */}
+      <Row>
+        <ToggleButtonGroup
+            type="checkbox"
+            value={selectedUsers}
+            onChange={handleChange}
+            vertical
+        >
+          {users.map((user, i) => (
+              <ToggleButton id={user} value={user} key={i}>
+                  {user}
+              </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+        <div className="messageContainer">
+          {selectedUsers.map((user, i) => (
+            <div key={i}>
+              <h2>{user}</h2>
+              {messages[user] ? messages[user].map((message, j) => (
+                <div key={j} className={message.sender === currentUser ? "message sent" : "message received"}>
+                  <img src={message.sender === currentUser ? currentUserAvatarUrl : message.senderAvatarUrl} className="avatar" alt="Sender's avatar" />
+                  <p>{message.text}</p>
+                  <p className="sender">{message.sender}</p>
+                </div>
+              )) : null}
+            </div>
+          ))}
+        </div>
+      </Row>
+      {/* Message Text Field */}
+      <Row>
+        <Form onSubmit={sendMessage}>
+          <Form.Group>
+            <Form.Control
+              as="textarea"
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              onKeyPress={(event) => (event.key === 'Enter' ? sendMessage(event) : null)}
+            />
+          </Form.Group>
+          <Button variant="primary" type="submit" className="text-end">
+            <SendIcon fontSize="large" />
+          </Button>
+        </Form>
+      </Row>
+    </Container>
+  );
+}
+
+export default Chat;
