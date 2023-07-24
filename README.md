@@ -6,25 +6,7 @@ React-based Web App for Inventory Management of D&amp;D campaigns.
 2. Run `sudo apt install nodejs` to actually install NodeJS. After that has finished, running `node -v` to verify that the installation was successful. That will list out the version of NodeJS that is installed. There is a minimum version requirement for the next command to work.
 3. In the directory where you want to house your files, run `npx create-react-app my-app`. The `my-app` part will be the name of the directory that gets created, and will house all your project files.
 4. Now that the folder for the React part of the project is set up, you can copy over all the files in the `src` folder of this project. THIS REPO DOES NOT CONTAIN THE FULL REACT DIRECTORY! You WILL have to create your own, then copy the supplied files into that folder. There are extra files that a React directory requires in order to function and build properly.
-5. `npm install react-bootstrap bootstrap
-   npm i react-router-dom
-   npm i axios
-   npm i socket.io-client
-   npm i jwt-decode
-   npm install leaflet
-   npm install react-leaflet
-   npm install @geoman-io/leaflet-geoman-free
-   npm i react-grid-layout
-   npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
-   npm install papaparse
-   npm i draft-js
-   npm i react-dnd
-   npm i react-dnd-html5-backend
-   npm i draft-js-checkable-list-item
-   npm i @trendmicro/react-sidenav
-   npm i react-spring
-   npm i @turf/turf
-   npm i draft-js-list-plugin --legacy-peer-deps` This one needs to be replaced or updated or something. It isn't compatible with the latest React version.
+5. `npm install react-bootstrap bootstrap react-router-dom axios socket.io-client jwt-decode leaflet react-leaflet @geoman-io/leaflet-geoman-free react-grid-layout @mui/icons-material @mui/material @emotion/styled @emotion/react papaparse draft-js react-dnd react-dnd-html5-backend draft-js-checkable-list-item @trendmicro/react-sidenav react-spring @turf/turf draft-js-list-plugin --legacy-peer-deps` This one needs to be replaced or updated or something. It isn't compatible with the latest React version.
 
 ## Install and Setup Python/Flask
 1. Now to setup the backend functions. First you'll need to ensure Python3 is installed. This is done by defualt on Raspberry Pi OS. To ensure it is installed, you can run `which python3`. If you get a response, you have Python3 installed. It should be installed by default on Raspberry Pi OS and also Ubuntu Server.
