@@ -6,6 +6,25 @@ React-based Web App for Inventory Management of D&amp;D campaigns.
 2. Run `sudo apt install nodejs` to actually install NodeJS. After that has finished, running `node -v` to verify that the installation was successful. That will list out the version of NodeJS that is installed. There is a minimum version requirement for the next command to work.
 3. In the directory where you want to house your files, run `npx create-react-app my-app`. The `my-app` part will be the name of the directory that gets created, and will house all your project files.
 4. Now that the folder for the React part of the project is set up, you can copy over all the files in the `src` folder of this project. THIS REPO DOES NOT CONTAIN THE FULL REACT DIRECTORY! You WILL have to create your own, then copy the supplied files into that folder. There are extra files that a React directory requires in order to function and build properly.
+5. `npm install react-bootstrap bootstrap
+   npm i react-router-dom
+   npm i axios
+   npm i socket.io-client
+   npm i jwt-decode
+   npm install leaflet
+   npm install react-leaflet
+   npm install @geoman-io/leaflet-geoman-free
+   npm i react-grid-layout
+   npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
+   npm install papaparse
+   npm i draft-js
+   npm i react-dnd
+   npm i react-dnd-html5-backend
+   npm i draft-js-checkable-list-item
+   npm i @trendmicro/react-sidenav
+   npm i react-spring
+   npm i @turf/turf
+   npm i draft-js-list-plugin --legacy-peer-deps` This one needs to be replaced or updated or something. It isn't compatible with the latest React version.
 
 ## Install and Setup Python/Flask
 1. Now to setup the backend functions. First you'll need to ensure Python3 is installed. This is done by defualt on Raspberry Pi OS. To ensure it is installed, you can run `which python3`. If you get a response, you have Python3 installed. It should be installed by default on Raspberry Pi OS and also Ubuntu Server.
@@ -29,6 +48,7 @@ Or in one line: `pip install flask flask_sqlalchemy werkzeug flask_cors flask_jw
 6. This project was created to use Nginx as the server, but could probably be adapted to use Apache2. Install Nginx on your system using `sudo apt install nginx`. Then use `sudo mv nginx.conf /etc/nginx/conf.d/nginx.conf` to place the config file in the right place for Nginx to use it.
 7. After copying the config file into the right directroy, run `sudo nginx -t` to verify the syntax of the file. Some systems might require different header setup, so you may need to remove the `user`, `events`, and `http` lines, but leave the 3 `server` lines because those are important! Just follow the feedback from `sudo nginx -t` until it compiles without issue. REMEMBER TO CHANGE THE LINES THAT BEGIN WITH `server_name` TO YOUR SERVER'S NAME, if you aren't running this on a Raspberry Pi named "raspberrypi". Also update your username in the line `root` under the `location /` block to your own username.
 8. If your system uses Systemctl, you can run `sudo systemctl restart nginx`, otherwise use `sudo service nginx restart` to restart the server.
+
 
 ## Getting it all up and running
 1. Now you can naviage to your `my-app` directory, if you aren't already there, and use `npm run build` to build the React pages into a static deliverable that Nginx will be able to serve up. This will create a new directroy in `my-app` called `build`, which Nginx should already be configured to use.
