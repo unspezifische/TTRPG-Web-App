@@ -32,6 +32,7 @@ Or in one line: `pip install flask flask_sqlalchemy werkzeug flask_cors flask_jw
 7. After copying the config file into the right directroy, run `sudo nginx -t` to verify the syntax of the file. Some systems might require different header setup, so you may need to remove the `user`, `events`, and `http` lines, but leave the 3 `server` lines because those are important! Just follow the feedback from `sudo nginx -t` until it compiles without issue. REMEMBER TO CHANGE THE LINES THAT BEGIN WITH `server_name` TO YOUR SERVER'S NAME, if you aren't running this on a Raspberry Pi named "raspberrypi". Also update your username in the line `root` under the `location /` block to your own username.
 8. If your system uses Systemctl, you can run `sudo systemctl restart nginx`, otherwise use `sudo service nginx restart` to restart the server.
 
+Probably need to setup DNS to find `wiki` and `app` domains at your `hostname.local`. And `maps`?
 
 ## Getting it all up and running
 1. Now you can naviage to your `my-app` directory, if you aren't already there, and use `npm run build` to build the React pages into a static deliverable that Nginx will be able to serve up. This will create a new directroy in `my-app` called `build`, which Nginx should already be configured to use.
