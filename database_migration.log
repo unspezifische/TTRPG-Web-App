@@ -1,0 +1,17 @@
+2024-02-23 17:13:45,353 Connected to the SQLite database
+2024-02-23 17:13:45,363 Connected to the PostgreSQL database
+2024-02-23 17:13:45,380 Tables: [('user',), ('npc',), ('journal',), ('message',), ('armor',), ('spell_items',), ('inventory',), ('weapon',), ('mount_vehicle',), ('character',), ('loot_box',), ('item',), ('loot_box_items',), ('spells',), ('spellbook',)]
+2024-02-23 17:13:45,380 Processing table: item
+2024-02-23 17:13:45,409 Processing table: npc
+2024-02-23 17:13:45,410 Processing table: journal
+2024-02-23 17:13:45,411 Processing table: message
+2024-02-23 17:13:45,478 Processing table: armor
+2024-02-23 17:13:45,488 Processing table: spell_items
+2024-02-23 17:13:45,488 Processing table: inventory
+2024-02-23 17:13:45,491 Skipping row in inventory due to missing character_id for user_id 12
+2024-02-23 17:13:45,502 Processing table: weapon
+2024-02-23 17:13:45,506 Processing table: mount_vehicle
+2024-02-23 17:13:45,510 Processing table: loot_box
+2024-02-23 17:13:45,512 Processing table: loot_box_items
+2024-02-23 17:13:45,516 Processing table: spells
+2024-02-23 17:13:45,517 Processing table: spellbook
